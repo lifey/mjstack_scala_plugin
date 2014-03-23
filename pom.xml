@@ -55,6 +55,11 @@
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4jVersion}</version>
         </dependency>
+        <dependency>
+            <groupId>com.performizeit</groupId>
+            <artifactId>mjstack</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
 </project>
