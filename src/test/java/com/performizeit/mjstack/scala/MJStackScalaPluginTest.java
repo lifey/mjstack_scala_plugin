@@ -56,4 +56,9 @@ public class MJStackScalaPluginTest {
        // System.out.println(pl.scalafyStack(st));
       //  assertEquals(scalaStack,pl.scalafyStack(st));
     }
+    @Test
+    public void tryLine() throws Exception {
+        String line = "    at HelloMe$.main(HelloMe.scala:4)";
+        MJStackScalaPlugin.scalafyStackFrame(line);
+    }
 }

@@ -10,20 +10,39 @@ import java.util.HashMap;
 
 @Plugin(name = "scalafy", paramTypes = {}, description = "scala plugin - makes the stack trace scala friendly")
 public class MJStackScalaPlugin implements JStackMapper {
-    private static String scalafyStackFrame(String line) {
-        if (line.trim().length() ==0) return "";
-        int fnStart = line.indexOf("(");
-        int atStart = line.indexOf("at ");
-        if (fnStart<0 || atStart<0) return line;
-        String fileName = line.substring(fnStart);
-        String at = line.substring(0, atStart + 3);
-        String pkgClsMthd = line.substring(atStart + 3, fnStart);
+     static String scalafyStackFrame(String stackFrame) {
+        try {
+            if (stackFrame.trim().length() == 0) return stackFrame;
+            int fnStart = stackFrame.indexOf("(");
+            int atStart = stackFrame.indexOf("at ");
+            if ( atStart < 0) return stackFrame;
+            String fileName;
+            String pkgClsMthd ;
+            if (fnStart<0 ) {
+                fileName ="";
+                pkgClsMthd = stackFrame.substring(atStart + 3);
+            } else {
+                fileName = stackFrame.substring(fnStart);
+                pkgClsMthd = stackFrame.substring(atStart + 3, fnStart);
+            }
+            String at = stackFrame.substring(0, atStart + 3);
 
-        String method = pkgClsMthd.substring(pkgClsMthd.lastIndexOf(".") + 1);
-        pkgClsMthd = pkgClsMthd.substring(0, pkgClsMthd.lastIndexOf("."));
-        String className = pkgClsMthd.substring(pkgClsMthd.lastIndexOf(".") + 1);
-        String pkg = pkgClsMthd.substring(0, pkgClsMthd.lastIndexOf("."));
-        return at + pkg + "." + ScalaUtil.createScalaFrameTitle(className, method) + fileName;
+            String method = pkgClsMthd.substring(pkgClsMthd.lastIndexOf(".") + 1);
+            pkgClsMthd = pkgClsMthd.substring(0, pkgClsMthd.lastIndexOf("."));
+            String className;
+            String pkg;
+            if (pkgClsMthd.contains(".")) {   // class name contains package
+                className = pkgClsMthd.substring(pkgClsMthd.lastIndexOf(".") + 1);
+                pkg = pkgClsMthd.substring(0, pkgClsMthd.lastIndexOf("."))+".";
+            } else {
+                className =   pkgClsMthd;
+                pkg = "";
+            }
+            return at + pkg  + ScalaUtil.createScalaFrameTitle(className, method) + fileName;
+        } catch (RuntimeException r ) {
+            System.out.println("Exception for:"+stackFrame);
+            throw r;
+        }
     }
 
     protected static String scalafyStack(String stackTrace) {
